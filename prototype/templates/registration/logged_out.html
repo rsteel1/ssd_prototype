@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+
+{% block app_content %}
+<div class="jumbotron">
+  <h1 class="display-4">Logged out successfully.</h1>
+  <hr class="my-4">
+  <p>If you want back into this <strong>fantastic</strong> application you're gonna have to log back in.</p>
+  <p class="lead">
+    <a class="btn btn-primary btn-lg" href="{% url "login" %}" role="button">Log in</a>
+  </p>
+</div>
+{% endblock %}

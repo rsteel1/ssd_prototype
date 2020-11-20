@@ -1,0 +1,18 @@
+[{
+        "model": "prototype.company",
+        "pk": 1,
+        "fields": {
+            "name": "SSTI",
+            "domain": "safarisecurity.com"
+        }
+    },
+    {
+        "model": "prototype.profile",
+        "pk": 1,
+        "fields": {
+            "user": 1,
+            "company": 1,
+            "role": "STAFF"
+        }
+    }
+]

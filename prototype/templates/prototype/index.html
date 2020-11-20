@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+{% block app_content %}
+{% if tickets %}
+    <h2>Tickets</h2>
+    <table class="mdl-data-table mdl-js-data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th class="mdl-data-table__cell--non-numeric">Status</th>
+                <th class="mdl-data-table__cell--non-numeric">Priority</th>
+                <th class="mdl-data-table__cell--non-numeric">Description</th>
+                <th class="mdl-data-table__cell--non-numeric">Type</th>
+                <th class="mdl-data-table__cell--non-numeric">Company</th>
+                <th class="mdl-data-table__cell--non-numeric">Assigned To</th>
+                <th>Date Created</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ticket in tickets %}
+            <tr>
+                <td>{{ ticket.id }}</td>
+                <td>{{ ticket.get_status_display }}</td>
+                <td>{{ ticket.get_priority_display }}</td>
+                <td>{{ ticket.description }}</td>
+                <td>{{ ticket.get_type_display }}</td>
+                <td>{{ ticket.company }}</td>
+                <td>{{ ticket.assigned_to }}</td>
+                <td>{{ ticket.created_datetime }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </ul>
+{% else %}
+    <p>No tickets available.</p>
+{% endif %}
+{% endblock %}

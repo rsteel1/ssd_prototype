@@ -1,0 +1,95 @@
+{% extends "layout.html" %}
+
+{% block app_content %}
+{% if ticket %}
+<h2>Ticket Details</h2>
+<div class="mdl-grid">
+    <div class="mdl-cell mdl-cell--3-col">
+        <table class="mdl-data-table mdl-js-data-table">
+            <tr>
+                <th>
+                    ID:
+                </th>
+                <td>
+                    {{ ticket.id }}
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Created on:
+                </th>
+                <td>
+                    {{ ticket.created_datetime }}
+                </td>
+            </tr>
+            <tr>
+                <th class="mdl-data-table__cel--non-numeric">
+                    Type:
+                </th>
+                <td>
+                    {{ ticket.get_type_display }}
+                </td>
+            </tr>
+            <tr>
+                <th class="mdl-data-table__cel--non-numeric">
+                    Status:
+                </th>
+                <td>
+                    {{ ticket.get_status_display }}
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Priority:
+                </th>
+                <td>
+                    {{ ticket.get_priority_display }}
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Company:
+                </th>
+                <td>
+                    {{ ticket.company.name }}
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Author:
+                </th>
+                <td>
+                    {% if ticket.author %}
+                    {{ ticket.author.first_name }} {{ ticket.author.last_name }}
+                    {% else %}
+                    No author registered.
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="mdl-cell">
+        <table class="mdl-data-table mdl-js-data-table">
+            <tr>
+                <th>
+                    Steps to reproduce:
+                </th>
+                <td>
+                    {{ ticket.steps }}
+                </td>
+            </tr>
+            <tr>
+                <th>
+                    Description:
+                </th>
+                <td>
+                    {{ ticket.description }}
+                </td>
+            </tr>
+        </table>
+    </div>
+
+{% else %}
+<p class="display-2">Invalid ticket ID.</p>
+{% endif %}
+{% endblock app_content %}
