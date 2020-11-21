@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseForbidden
 from django.views import generic
 from django.urls import reverse
 from django.shortcuts import redirect
@@ -8,8 +8,8 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 
-from .models import Ticket, Company
-from .forms import CreateTicketFormFactory, RegisterForm
+from .models import Ticket, Company, TicketComment
+from .forms import AddCommentForm, CreateTicketFormFactory, RegisterForm, EditTicketForm
 
 # Create your views here.
 class IndexView(LoginRequiredMixin, generic.ListView):
@@ -22,10 +22,22 @@ class IndexView(LoginRequiredMixin, generic.ListView):
             return Ticket.objects.filter(company=self.request.user.profile.company).order_by("-created_datetime")
         return Ticket.objects.order_by("-created_datetime")
 
-class TicketView(generic.DetailView):
-    model = Ticket
-    template_name = "prototype/ticket_detail.html"
-    context_object_name = "ticket"
+def access_allowed(request, ticket):
+    if request.user.profile.is_client() and ticket.company != request.user.profile.company:
+        return False
+    else:
+        return True
+
+@login_required
+def ticket(request, ticket_id):
+    ticket = get_object_or_404(Ticket, pk=ticket_id)
+
+    if not access_allowed(request, ticket):
+        return HttpResponseForbidden()
+        
+    comments = TicketComment.objects.filter(ticket_id=ticket_id)
+    return render(request, template_name = "prototype/ticket_detail.html", context={"ticket": ticket, "comments": comments})
+    
 
 @login_required
 def create_ticket(request):
@@ -48,6 +60,39 @@ def create_ticket(request):
         form = factory.generate_form()
     return render(request, "prototype/create_ticket.html", context={"form": form})
 
+@login_required
+def edit_ticket(request, ticket_id):
+    ticket = get_object_or_404(Ticket, pk=ticket_id)
+
+    if not access_allowed(request, ticket):
+        return HttpResponseForbidden()
+
+    form = EditTicketForm(request.POST or None, instance=ticket)
+    if request.method == "POST" and form.is_valid():
+        form.save()
+        return redirect("/")
+    return render(request, "prototype/edit_ticket.html", context={"form": form})
+
+@login_required
+def add_comment(request, ticket_id):
+    ticket = get_object_or_404(Ticket, pk=ticket_id)
+
+    if not access_allowed(request, ticket):
+        return HttpResponseForbidden()
+
+    if request.method == "POST":
+        form = AddCommentForm(request.POST)
+        if form.is_valid():
+            print("FORM VALID")
+            new_comment = form.save(commit=False)
+            new_comment.ticket = ticket
+            new_comment.author = request.user
+            new_comment.save()
+            return redirect("ticket", ticket_id=ticket_id)
+    else:
+        form = AddCommentForm()
+    return render(request, "prototype/add_comment.html", context={"form": form})
+
 def register(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -66,9 +111,3 @@ def register(request):
     else:
         form = RegisterForm()
     return render(request, "registration/register.html", context={"form": form})
-
-def ticket(request, ticket_id):
-    # TODO: Add user authorisation here
-    ticket = get_object_or_404(Ticket, pk=ticket_id)
-    return render(request, "")
-    

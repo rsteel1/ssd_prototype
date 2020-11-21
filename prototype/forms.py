@@ -4,7 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
-from .models import Company, Ticket
+from .models import Company, Ticket, TicketComment
 
 
 class CreateTicketFormClient(forms.ModelForm):
@@ -14,7 +14,7 @@ class CreateTicketFormClient(forms.ModelForm):
 
     class Meta:
         model = Ticket
-        fields = ["description", "type", "priority"]
+        fields = ["steps", "description", "type", "priority"]
 
     def is_client_form(self):
         return True
@@ -26,7 +26,7 @@ class CreateTicketForm(forms.ModelForm):
 
     class Meta:
         model = Ticket
-        fields = ["description", "type", "priority", "company", "assignee"]
+        fields = ["steps", "description", "type", "priority", "company", "assignee"]
 
     def is_client_form(self):
         return False
@@ -42,6 +42,35 @@ class CreateTicketFormFactory():
         else:
             return CreateTicketForm(*args)
 
+
+class EditTicketForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(EditTicketForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper
+
+    class Meta:
+        model = Ticket
+        fields = ["steps", "description", "status", "type", "priority", "company", "assignee"]
+
+    def is_client_form(self):
+        return True
+
+    def clean(self):
+        super(EditTicketForm, self).clean()
+
+        cd = self.cleaned_data
+        if self.instance.status == "OPEN" and cd.get("status") == "CLOSED":
+            self.add_error("status", "This status cannot be set yet. Please set to Resolved before Closed")
+        return cd
+
+class AddCommentForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(AddCommentForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper
+
+    class Meta:
+        model = TicketComment
+        fields = ["description"]
 
     
 class RegisterForm(UserCreationForm):

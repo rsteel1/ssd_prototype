@@ -3,8 +3,11 @@
 {% block app_content %}
 {% if ticket %}
 <h2>Ticket Details</h2>
+{% if not user.is_client %}
+<a class="btn btn-primary" href="{% url "edit_ticket" ticket.id %}" role="button">Edit Ticket</a>
+{% endif %}
 <div class="mdl-grid">
-    <div class="mdl-cell mdl-cell--3-col">
+    <div class="mdl-cell mdl-cell--4-col">
         <table class="mdl-data-table mdl-js-data-table">
             <tr>
                 <th>
@@ -68,27 +71,53 @@
             </tr>
         </table>
     </div>
-    <div class="mdl-cell">
+    <div class="mdl-cell mdl-cell--4-col">
         <table class="mdl-data-table mdl-js-data-table">
             <tr>
-                <th>
+                <th class="mdl-data-table__cell--non-numeric">
                     Steps to reproduce:
                 </th>
                 <td>
-                    {{ ticket.steps }}
+                    {{ ticket.steps|linebreaks }}
                 </td>
             </tr>
             <tr>
-                <th>
+                <th class="mdl-data-table__cell--non-numeric">
                     Description:
                 </th>
                 <td>
-                    {{ ticket.description }}
+                    {{ ticket.description|linebreaks }}
                 </td>
             </tr>
         </table>
     </div>
-
+</div>
+<div class="mdl-grid">
+    <div class="mdl-cell mdl-cell--8-col">
+    <h3>Comments</h3>
+        {% if ticket.status != "CLOSED" %}
+        <a class="btn btn-primary" role="button" href="{% url "add_comment" ticket.id %}">Add Comment</a>
+        {% endif %}
+        {% if comments|length == 0 %}
+        <p> This ticket doesnt have any comments.</p>
+        {% else %}
+        <table class="mdl-data-table mdl-js-data-table">
+            {% for comment in comments %}
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">
+                    {{ comment.author }} on {{ comment.created_at }}
+                </th>
+                <td>
+                <div style="width: 80em; word-wrap: break-word; white-space: normal;">
+                    {{ comment.description }}
+                </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+    </div>
+</div>
 {% else %}
 <p class="display-2">Invalid ticket ID.</p>
 {% endif %}

@@ -15,6 +15,9 @@
                 <th class="mdl-data-table__cell--non-numeric">Assigned To</th>
                 <th>Date Created</th>
                 <th class="mdl-data-table__cell--non-numeric">View</th>
+                {% if not user.profile.is_client %}
+                <th class="mdl-data-table__cell--non-numeric">Edit</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -28,7 +31,10 @@
                 <td>{{ ticket.company }}</td>
                 <td>{{ ticket.assigned_to }}</td>
                 <td>{{ ticket.created_datetime }}</td>
-                <td><a class="btn" href="{% url "ticket" ticket.id %}"><i class="material-icons" >visibility</i></a></td>
+                <td><a class="mdl-button mdl-js-button mdl-button--icon" href="{% url "ticket" ticket.id %}"><i class="material-icons" >visibility</i></a></td>
+                {% if not user.profile.is_client %}
+                <td><a class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored" href="{% url "edit_ticket" ticket.id %}"><i class="material-icons" >create</i></a></td>
+                {% endif %}
             </tr>
             {% endfor %}
         </tbody>

@@ -63,7 +63,7 @@ class TicketComment(models.Model):
     description = models.TextField()
     created_at = models.DateField(auto_now=True)
 
-    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE)
+    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="comments")
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):

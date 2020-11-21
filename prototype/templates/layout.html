@@ -36,19 +36,19 @@
                 </div>
             </header>
             <main class="mdl-layout__content">
-                <div class="page-content mdl-grid">
-                <div class="mdl-layout-spacer"></div>
-                    <div class="mdl-cell mdl-cell--8-col">
-                    {% block app_content %}{% endblock %}
+                <div class="container-fluid">
+                    <div class="row justify-content-md-center">
+                        <div class="col-md-8 mt-5 mb-5">
+                            {% block app_content %}{% endblock %}
+                        </div>
                     </div>
-                <div class="mdl-layout-spacer"></div>
                 </div>
             </main>
-            <footer class="mdl-mini-footer">
+            {% comment %} <footer class="mdl-mini-footer">
                 <div class="mdl-mini-footer__left-section">
                     <div class="mdl-logo">© 2020 Copyright SSTS</div>
                 </div>
-            </footer>
+            </footer> {% endcomment %}
         </div>
     </body>
 </html>

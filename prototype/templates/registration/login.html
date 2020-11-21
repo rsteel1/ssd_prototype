@@ -12,9 +12,11 @@
 </div>
 
 {% load crispy_forms_tags %}
+<h1 class="display-4">Login</h1>
 <form method="post">
     {% csrf_token %}
     {{ form|crispy }}
     <input class="btn btn-primary" type="submit" value="Submit"/>
 </form>
+<a href="{% url "password_reset" %}">Forgot Password?</a>
 {% endblock %}
