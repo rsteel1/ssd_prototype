@@ -76,7 +76,7 @@ def create_ticket(request):
 def edit_ticket(request, ticket_id):
     ticket = get_object_or_404(Ticket, pk=ticket_id)
 
-    if not access_allowed(request, ticket):
+    if not access_allowed(request, ticket) or request.user.profile.is_client():
         return HttpResponseForbidden()
 
     form = EditTicketForm(request.POST or None, instance=ticket)
