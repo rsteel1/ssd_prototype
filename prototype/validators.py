@@ -11,10 +11,8 @@ class ComplexityValidator:
 
         if not re.search(pattern, password):
             raise ValidationError(
-                _(self.get_help_text()), code="password_not_complex_enough"
+                self.get_help_text(), code="password_not_complex_enough"
             )
-        else:
-            return ValidationError()
 
     def get_help_text(self):
         chars = list("-+_!@#$%^&*., ?")

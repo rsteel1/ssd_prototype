@@ -19,14 +19,21 @@ class IndexView(LoginRequiredMixin, generic.ListView):
     def get_queryset(self):
         user = self.request.user
         if user.profile.role == "CLIENT":
-            return Ticket.objects.filter(company=self.request.user.profile.company).order_by("-created_datetime")
+            return Ticket.objects.filter(
+                company=self.request.user.profile.company
+            ).order_by("-created_datetime")
         return Ticket.objects.order_by("-created_datetime")
 
+
 def access_allowed(request, ticket):
-    if request.user.profile.is_client() and ticket.company != request.user.profile.company:
+    if (
+        request.user.profile.is_client()
+        and ticket.company != request.user.profile.company
+    ):
         return False
     else:
         return True
+
 
 @login_required
 def ticket(request, ticket_id):
@@ -34,31 +41,36 @@ def ticket(request, ticket_id):
 
     if not access_allowed(request, ticket):
         return HttpResponseForbidden()
-        
+
     comments = TicketComment.objects.filter(ticket_id=ticket_id)
-    return render(request, template_name = "prototype/ticket_detail.html", context={"ticket": ticket, "comments": comments})
-    
+    return render(
+        request,
+        template_name="prototype/ticket_detail.html",
+        context={"ticket": ticket, "comments": comments},
+    )
+
 
 @login_required
 def create_ticket(request):
     factory = CreateTicketFormFactory(request.user.profile)
-    if (request.method == "POST"):
+    if request.method == "POST":
         form = factory.generate_form(request.POST)
         if form.is_valid():
             new_ticket = form.save(commit=False)
             cd = form.cleaned_data
             print(cd)
-            if not request.user.profile.is_client():
+            if request.user.profile.is_client():
                 new_ticket.company = request.user.profile.company
             else:
-                new_ticket.company = cd.get["company"]
-                new_ticket.assignee = cd.get["assignee"]
+                new_ticket.company = cd.get("company")
+                new_ticket.assignee = cd.get("assignee")
             new_ticket.author = request.user
             new_ticket.save()
             return redirect("/")
     else:
         form = factory.generate_form()
     return render(request, "prototype/create_ticket.html", context={"form": form})
+
 
 @login_required
 def edit_ticket(request, ticket_id):
@@ -72,6 +84,7 @@ def edit_ticket(request, ticket_id):
         form.save()
         return redirect("/")
     return render(request, "prototype/edit_ticket.html", context={"form": form})
+
 
 @login_required
 def add_comment(request, ticket_id):
@@ -93,6 +106,7 @@ def add_comment(request, ticket_id):
         form = AddCommentForm()
     return render(request, "prototype/add_comment.html", context={"form": form})
 
+
 def register(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -103,6 +117,8 @@ def register(request):
             user.refresh_from_db()
             user.profile.company_id = company.id
             user.profile.save()
+            if user.profile.company.name == "Safari Security":
+                user.profile.role = "STAFF"
             user.save()
             password = form.cleaned_data.get("password1")
             user = authenticate(username=user.username, password=password)

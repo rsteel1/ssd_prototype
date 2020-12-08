@@ -42,7 +42,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'encrypted_fields'
 ]
+
+FIELD_ENCRYPTION_KEYS = [
+    "614791eed96e9b4c59dd7c7768840760394b1df9bd2deaacf882aa34bc2271df"
+] 
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -55,6 +60,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'prototype_proj.urls'
+
+SESSION_COOKIE_AGE = 600
+SESSION_SAVE_EVERY_REQUEST = True
 
 TEMPLATES = [
     {
@@ -108,8 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 PASSWORD_HASHERS = [
-    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
-    'django.contrib.auth.hashers.PBKDF2PasswordHasher'
+    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher"
 ]
 
 

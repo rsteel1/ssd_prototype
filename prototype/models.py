@@ -2,10 +2,11 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from encrypted_fields import fields
 
-User._meta.get_field('email')._unique = True
-User._meta.get_field('email').blank = False
-User._meta.get_field('email').null = False
+User._meta.get_field("email")._unique = True
+User._meta.get_field("email").blank = False
+User._meta.get_field("email").null = False
 User._meta.get_field("first_name").blank = False
 User._meta.get_field("first_name").null = False
 User._meta.get_field("last_name").blank = False
@@ -29,19 +30,21 @@ class Profile(models.Model):
     def is_client(self):
         return self.role == "CLIENT"
 
+
 @receiver(post_save, sender=User)
 def update_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
     instance.profile.save()
 
+
 class Ticket(models.Model):
     PRIORITY_CHOICES = [(1, "High"), (2, "Medium"), (3, "Low")]
     TYPE_CHOICES = [("DEV", "Development"), ("TEST", "Testing"), ("PROD", "Production")]
     STATUS_CHOICES = [("OPEN", "Open"), ("RES", "Resolved"), ("CLOSED", "Closed")]
 
-    description = models.TextField(default="")
-    steps = models.TextField(default="")
+    description = fields.EncryptedTextField(default="")
+    steps = fields.EncryptedTextField(default="")
     created_datetime = models.DateField(auto_now=True)
     type = models.CharField(choices=TYPE_CHOICES, default="DEV", max_length=20)
     status = models.CharField(choices=STATUS_CHOICES, default="OPEN", max_length=15)
@@ -60,10 +63,12 @@ class Ticket(models.Model):
 
 
 class TicketComment(models.Model):
-    description = models.TextField()
+    description = fields.EncryptedTextField()
     created_at = models.DateField(auto_now=True)
 
-    ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="comments")
+    ticket = models.ForeignKey(
+        Ticket, on_delete=models.CASCADE, related_name="comments"
+    )
     author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):

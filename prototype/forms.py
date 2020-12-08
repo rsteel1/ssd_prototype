@@ -19,6 +19,7 @@ class CreateTicketFormClient(forms.ModelForm):
     def is_client_form(self):
         return True
 
+
 class CreateTicketForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CreateTicketForm, self).__init__(*args, **kwargs)
@@ -32,7 +33,7 @@ class CreateTicketForm(forms.ModelForm):
         return False
 
 
-class CreateTicketFormFactory():
+class CreateTicketFormFactory:
     def __init__(self, profile):
         self.profile = profile
 
@@ -50,18 +51,27 @@ class EditTicketForm(forms.ModelForm):
 
     class Meta:
         model = Ticket
-        fields = ["steps", "description", "status", "type", "priority", "company", "assignee"]
-
-    def is_client_form(self):
-        return True
+        fields = [
+            "steps",
+            "description",
+            "status",
+            "type",
+            "priority",
+            "company",
+            "assignee",
+        ]
 
     def clean(self):
         super(EditTicketForm, self).clean()
 
         cd = self.cleaned_data
         if self.instance.status == "OPEN" and cd.get("status") == "CLOSED":
-            self.add_error("status", "This status cannot be set yet. Please set to Resolved before Closed")
+            self.add_error(
+                "status",
+                "This status cannot be set yet. Please set to Resolved before Closed",
+            )
         return cd
+
 
 class AddCommentForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
@@ -72,7 +82,7 @@ class AddCommentForm(forms.ModelForm):
         model = TicketComment
         fields = ["description"]
 
-    
+
 class RegisterForm(UserCreationForm):
     def __init__(self, *args, **kwargs):
         super(RegisterForm, self).__init__(*args, **kwargs)
@@ -80,7 +90,14 @@ class RegisterForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ["username", "first_name", "last_name", "email", "password1", "password2"]
+        fields = [
+            "username",
+            "first_name",
+            "last_name",
+            "email",
+            "password1",
+            "password2",
+        ]
 
     def clean(self):
         super(RegisterForm, self).clean()
@@ -89,5 +106,8 @@ class RegisterForm(UserCreationForm):
         try:
             Company.objects.get(domain=domain)
         except ObjectDoesNotExist:
-            self.add_error("email", "This email domain is not registered to any company in our database.")
+            self.add_error(
+                "email",
+                "This email domain is not registered to any company in our database.",
+            )
         return cd
