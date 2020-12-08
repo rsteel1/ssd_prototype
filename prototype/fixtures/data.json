@@ -2,7 +2,7 @@
         "model": "prototype.company",
         "pk": 1,
         "fields": {
-            "name": "SSTI",
+            "name": "Safari Security",
             "domain": "safarisecurity.com"
         }
     },
